@@ -1,0 +1,29 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <div>
+            <form action="" name="create_page" method="POST">
+                <input type="text" name="page_name" value="" id="page_name"/>
+                <input type="submit" name="page_create" value="create new page" />
+            </form>
+        </div>
+        
+        <script type="text/javascript">
+            $(function(){
+                var sRenderPrefix = "<?php echo RENDER_PREFIX;?>"
+                var sCurrentAddress = location.pathname
+                
+                var sPageName = sCurrentAddress.replace(sRenderPrefix, '', 'gi').substr(1)
+                $('#page_name').val(sPageName)
+            })
+        </script>
+    </body>
+</html>

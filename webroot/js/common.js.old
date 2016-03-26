@@ -1,0 +1,353 @@
+function processResponse(sMode, oData){
+	switch(sMode){
+		case 'ftp':
+			if(oData.status){
+				alert('Connected!')
+			}
+			else{
+				alert('Connection attempt has failed! Please, check supplied data and test connection again')
+			}
+		break;
+
+		case 'aweber':
+			if(oData.callback){
+				eval(oData.callback.func+'('+'"'+oData.callback.param+'")')
+				return
+			}
+			else{
+				if(oData.status){
+					alert('AWeber user has been authenticated!');
+				}
+				else{
+					alert('AWeber user hasn\'t been authenticated! \nPlease, check supplied AWeber credentials');
+				}
+			}
+		break;
+	}
+
+	hideCheckingLoader('.check[data-type="'+sMode+'"]')
+
+}
+
+function showAuthPrompt(sAuthUrl){
+	var oAuthWindow = window.open(sAuthUrl,'_blank','width=1024,height=768');
+
+	window.onfocus = function(){
+			if(oAuthWindow.closed){
+				alert('No authentication data received! \n Authentication attempt has failed');
+				hideCheckingLoader('.check[data-type="aweber"]')
+				window.onfocus = function(){}
+			}
+		}
+
+}
+
+function showCheckingLoader(sObjectId){
+	var oObject = $(sObjectId);
+
+	if('undefined' != typeof oObject.data('loader_timestamp')){
+		$('#checking_loader_'+oObject.data('loader_timestamp')).show()
+		return false
+	}
+
+	var iLoaderTimestamp = new Date().getTime();
+
+	oObject.data({loader_timestamp:iLoaderTimestamp})
+
+	var oLayer = $('<div>')
+		.css({
+					position:'absolute',
+					top:oObject.offset().top+'px',
+					left:oObject.offset().left+'px',
+					width:oObject.outerWidth(true)+'px',
+					height:oObject.outerHeight(true)+'px',
+					textAlign:'center',
+					backgroundColor:'#FFB90F',
+					fontSize:'20px',
+					opacity:0.8
+				})
+		.attr({id:'checking_loader_'+iLoaderTimestamp})
+		.html('<img src="img/loader.gif">')
+
+	$('body').append(oLayer)
+
+}
+
+function hideCheckingLoader(sObjectId){
+	var iLoaderTimestamp = $(sObjectId).data('loader_timestamp')
+
+	$('#checking_loader_'+iLoaderTimestamp).hide()
+}
+
+function checkFtpConnection(){
+	var oFtpData = {}
+
+	$('.ftp_field').each(function (k, v){
+				oFtpData[$(v).data('type')] = $(v).val();
+			})
+
+	$.ajax({
+		dataType: 'json',
+		type:'POST',
+		url: 'json/connections',
+		data:{
+			action:'check_ftp_connection',
+			ftp_data:oFtpData
+		},
+		beforeSend:	function(){
+			showCheckingLoader('.check[data-type="ftp"]')
+		},
+		success: function(data) {
+			processResponse('ftp', data)
+		}
+	})
+}
+
+function checkAweberConnection(bAsync){
+	var oData = oAweberData = {}
+
+	$('.aweber_field').each(function (k, v){
+				oAweberData[$(v).data('type')] = $(v).val();
+			})
+
+			showCheckingLoader('.check[data-type="aweber"]')
+
+	$.ajax({
+		dataType: 'json',
+		type:'POST',
+		url: 'json/connections',
+		async: bAsync,
+		data:{
+			action:'check_aweber_connection'
+			,aweber_data:oAweberData
+		},
+		success: function(data) {
+			oData = data
+
+			if(bAsync){
+				processResponse('aweber', oData)
+			}
+		}
+	})
+
+	return oData
+}
+
+function validateConnections(fCallback){
+	$.ajax({
+		dataType: 'json',
+		type:'POST',
+		url: 'json/connections',
+		data:{
+			action:'validate_connections'
+		},
+		beforeSend:	function(){
+			showCheckingLoader('.check[data-type="all"]')
+		},
+		success: function(data) {
+			var bContinue = true
+			if(data.status){
+				if(typeof fCallback == 'function'){
+					if(!fCallback()){
+						bContinue = false
+					}
+				}
+				if(bContinue){
+					$('form').submit()
+				}
+			}
+			else{
+				var sNote = ''
+
+				switch(true){
+					case (!data.ftp && !data.aweber):
+						sNote = 'Neither FTP nor AWeber connections are valid!'
+					break;
+
+					case (!data.ftp):
+						sNote = 'FTP connection is not valid'
+					break;
+
+					case (!data.aweber):
+						sNote = 'AWeber connecion is not valid'
+					break;
+				}
+
+				alert(sNote);
+		}
+				
+			hideCheckingLoader('.check[data-type="all"]')
+		}
+	})
+}
+
+function ftp_upload(){
+	$.ajax({
+		dataType: 'json',
+		type:'POST',
+		url: 'json/generator',
+		data:{
+			action:'upload'
+		},
+		beforeSend:	function(){
+			showCheckingLoader('.submit[data-type="unzip"]')
+			$('#recaptcha_error').hide()
+			$('#upload_progress').html('Sending to FTP...')
+		},
+		success: function(data) {
+			if(!data.recaptcha_status){
+				$('#recaptcha_error').show()
+			}
+			else{
+				if(!data.unzip_status){
+					alert('unzip failed???')
+				}
+				else if(!data.upload_status){
+					alert('upload failed')
+				}
+				else{
+					alert('upload succeeded')
+					$('#upload_progress').hide()
+				}
+			}
+			hideCheckingLoader('.submit[data-type="unzip"]')
+		}
+	})
+}
+
+function generate(sPath){
+	$.ajax({
+		dataType: 'json',
+		type:'POST',
+		url: 'json/generator',
+		data:{
+			action:'unzip',
+			path:sPath,
+			recaptcha_response_field:$('input[name="recaptcha_response_field"]').val(),
+			recaptcha_challenge_field:$('input[name="recaptcha_challenge_field"]').val()
+		},
+		beforeSend:	function(){
+			Recaptcha.reload()
+			showCheckingLoader('.submit[data-type="unzip"]')
+			$('#recaptcha_error').hide()
+			$('#upload_progress').html('Unzipping...')
+		},
+		success: function(data) {
+			if(!data.recaptcha_status){
+				$('#recaptcha_error').show()
+				hideCheckingLoader('.submit[data-type="unzip"]')
+				return false;
+			}
+			else{
+				if(!data.unzip_status){
+					alert('unzip failed!!!')
+					$('#upload_progress').hide()
+					hideCheckingLoader('.submit[data-type="unzip"]')
+
+					return false;
+				}
+				else{
+					ftp_upload()
+				}
+			}
+		}
+	})
+}
+
+function generateLists(){
+	$.ajax({
+		dataType: 'json',
+		type:'POST',
+		url: 'json/generator',
+		data:{
+			action:'generate',
+			recaptcha_response_field:$('input[name="recaptcha_response_field"]').val(),
+			recaptcha_challenge_field:$('input[name="recaptcha_challenge_field"]').val(),
+			aweber_username:$('input[name="aweber_username"]').val(),
+			aweber_password:$('input[name="aweber_password"]').val(),
+		},
+		beforeSend:	function(){
+			Recaptcha.reload()
+			showCheckingLoader('.submit[data-type="generator"]')
+			$('#recaptcha_error').hide()
+		},
+		success: function(data) {
+			if(!data.recaptcha_status){
+				$('#recaptcha_error').show()
+			}
+			else{
+				if(!data.list_status){
+					alert('List generation failed. Please, check supplied credentials and try again.')
+				}
+				else{
+					alert('List generation succeeded');
+				}
+			}
+			hideCheckingLoader('.submit[data-type="generator"]')
+			if(typeof data.next!='undefined'){
+				location.href = data.next
+			}
+		}
+	})
+}
+
+function logout(){
+	$.ajax({
+		dataType: 'json',
+		type:'POST',
+		url: 'json/user',
+		data:{
+			action:'logout'
+		},
+		success: function(data) {
+			if(typeof data.next!='undefined'){
+				location.href = data.next
+			}
+		}
+	})
+}
+
+$(function(){
+		$('#main_domain_url').keyup(function(){
+				$('#squeeze_url').val($(this).val()+'/free')
+				$('.substitutable').val($(this).val()+'/'+sPname)
+			})
+
+		$('.check').click(function(){
+			var sType = $(this).data('type')
+			
+			switch(sType){
+				case 'ftp':
+					checkFtpConnection()
+				break;
+
+				case 'aweber':
+					var oData = checkAweberConnection(false);
+					
+					processResponse('aweber', oData)
+				break;
+
+				case 'all':
+					validateConnections()
+				break;
+
+				case 'generator':
+					generateLists()
+				break;
+				
+				case 'unzip':
+					$('#upload_progress').html('Uploading...').show()
+
+					showCheckingLoader('.submit[data-type="unzip"]')
+//					$('#upload_form').attr({action:'/upload'})
+					$('#upload_form').submit()
+				break;
+
+			}
+		})
+
+		$('#logout').click(function(){
+			logout()
+		})
+
+})

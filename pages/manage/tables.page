@@ -1,0 +1,46 @@
+<?php
+
+    class tablesPage extends Page {
+        
+        public $iAccess = self::ACCESS_LOGIN;
+        
+        public function onInit() {
+            /*
+             * RC_TODO:
+             * wouldn't it be better, if in layout assign, instead of modules names, values would be modules instances?
+             */
+            
+            $sContentModule = 'bootstrap_tables_view';
+            
+            $this->injectBasicModule('bootstrap_meta');
+            $this->injectBasicModule('bootstrap_menu');
+            $this->injectBasicModule('bootstrap_footer');
+                
+            if(!empty($this->getGet()['option'])){
+                $sContentModule = 'bootstrap_table_edit';
+            
+                $this->injectFormModule($sContentModule);
+            }
+            else{
+                $this->injectBasicModule($sContentModule);
+            }
+            
+            $this->assignLayout('common', [
+                'meta'      =>  'bootstrap_meta'
+                ,'menu'     =>  'bootstrap_menu'
+                ,'content'  =>  $sContentModule
+                ,'footer'   =>  'bootstrap_footer'
+            ]);
+            
+            
+        }
+        
+        public function beforeRender(){}
+        public function afterRender(){}
+        public function onSubmit($aPost, $aGet){}
+        public function onXHR(){}
+        public function onEnd(){}
+        public function printData(){}
+    }
+
+?>

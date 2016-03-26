@@ -1,0 +1,21 @@
+<?php
+
+    class logoutPage extends Page {
+        
+        public $iAccess = self::ACCESS_ALL;
+        
+        public function onInit() {
+            $oAuth = $this->getLib('auth');
+            $oAuth->logout();
+            
+            $this->redirect(PAGE_LOGIN);
+        }
+        
+        public function beforeRender(){}
+        public function afterRender(){}
+        public function onXHR(){}
+        public function onEnd(){}
+        public function printData(){}
+    }
+
+?>

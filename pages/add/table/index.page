@@ -1,0 +1,28 @@
+<?php
+
+    class indexPage extends Page {
+        
+        public $iAccess = self::ACCESS_LOGIN;
+        
+        public function onInit() {
+            $this->assignLayout('common', [
+                'meta'      =>  'bootstrap_meta'
+                ,'menu'     =>  'bootstrap_menu'
+                ,'content'  =>  'bootstrap_tables_add'
+                ,'footer'   =>  'bootstrap_footer'
+            ]);
+            
+            $this->injectBasicModule('bootstrap_meta');
+            $this->injectBasicModule('bootstrap_menu');
+            $this->injectFormModule('bootstrap_tables_add');
+            $this->injectBasicModule('bootstrap_footer');
+        }
+        
+        public function beforeRender(){}
+        public function afterRender(){}
+        public function onXHR(){}
+        public function onEnd(){}
+        public function printData(){}
+    }
+
+?>

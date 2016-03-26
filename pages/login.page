@@ -1,0 +1,18 @@
+<?php
+
+    class loginPage extends Page {
+        
+        public $iAccess = self::ACCESS_ALL;
+        
+        public function onInit() {
+            $this->injectFormModule('bootstrap_login');
+        }
+        
+        public function beforeRender(){}
+        public function afterRender(){}
+        public function onXHR(){}
+        public function onEnd(){}
+        public function printData(){}
+    }
+
+?>

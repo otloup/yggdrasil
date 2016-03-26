@@ -1,0 +1,28 @@
+<?php
+
+    class userPage extends Page {
+        
+        public $iAccess = self::ACCESS_ADMIN;
+        
+        public function onInit() {
+            $this->assignLayout('common', [
+                'meta'      =>  'bootstrap_meta'
+                ,'menu'     =>  'bootstrap_menu'
+                ,'content'  =>  'bootstrap_users_add'
+                ,'footer'   =>  'bootstrap_footer'
+            ]);
+            
+            $this->injectBasicModule('bootstrap_meta');
+            $this->injectBasicModule('bootstrap_menu');
+            $this->injectFormModule('bootstrap_users_add');
+            $this->injectBasicModule('bootstrap_footer');
+        }
+        
+        public function beforeRender(){}
+        public function afterRender(){}
+        public function onXHR(){}
+        public function onEnd(){}
+        public function printData(){}
+    }
+
+?>

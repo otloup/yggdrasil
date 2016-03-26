@@ -1,0 +1,50 @@
+<div style="width:100%;">
+    <div style="float:left;">
+        <div>
+            <input type="text" id="input"></input>
+            <input type="button" id="count" value="Count"></input>
+            <input type="button" id="reset" value="Reset"></input>
+            
+            <input type="button" id="wipe" value="Wipe Clean Colors And Output"></input>
+        </div>
+        <div>
+            <span style="display:inline-block;position:relative;">
+                <input type="hidden" id="diff" value="0"></input>
+                <input type="range" id="diff_range" min="0" max="16581375" value="0"></input>
+                <input type="number" id="diff_val" min="0" max="16581375" value="0"></input>
+                <span id="checked_wrapper">
+                    <label for="lock">Lock Conversion Value</label>
+                    <input type="checkbox" id="lock" name="lock"></input>
+                </span>
+            </span>
+        </div>
+    </div>
+    
+    <div style="position:absolute;right:60px;">
+        <div>
+            <div style="position:relative;height:135px;">
+                <div id="button">&nbsp;</div>
+                <div id="buttonfrom">
+                    <div class="cinfo">
+                        <b class="genhex"></b><br />
+                        <b class="gensum"></b>
+                    </div>
+                </div>
+                <div id="buttonto">
+                    <div  class="cinfo">
+                        <b class="genhex"></b><br />
+                        <b class="gensum"></b>
+                    </div>
+                </div>
+                <br style="clear:both;"/>
+            </div>
+        </div>
+    </div>
+    <br style="clear:both;"/>
+<div>
+    
+<div style="margin-top:10px;width:80%;position:relative;">
+    output:<br />
+    <textarea style="width:100%;height:200px;" id="output"></textarea>
+    <input type="button" id="clean" value="Clean"></input>
+</div>

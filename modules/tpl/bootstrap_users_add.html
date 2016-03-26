@@ -1,0 +1,114 @@
+    <div id="wrapper">
+
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Dodaj nowego użytkownika</h1>
+                    
+                    {if $successMessages}
+                        <ul>
+                        {foreach $successMessages as $success}
+                            <li>{$success}</li>
+                        {/foreach}
+                        </ul>
+                    {/if}
+                    
+                    {if $errorMessages}
+                        <ul>
+                        {foreach $errorMessages as $error}
+                            <li>{$error}</li>
+                        {/foreach}
+                        </ul>
+                    {/if}
+                    
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    
+                                    {if !empty($collective_errors)}
+                                        <ul>
+                                        {foreach $collective_errors as $error}
+                                            <li>{$error}</li>
+                                        {/foreach}
+                                        </ul>
+                                    {/if}
+                                    
+                                    <form role="form" method="POST" action="{$action}">
+                                        <div class="row">
+                                            <div class="form-group">
+                                                    <label>adres e-mail</label>
+                                                    <input name="email" type="email" class="form-control" placeholder="wprowadź adres email">
+                                                </div>
+                                        </div>
+                                        
+                                        <div class="row form_row"  data-spawn="true">
+                                            <div class="col-lg-6">                   
+                                                <div class="form-group">
+                                                    <label>hasło</label>
+                                                    <input name="password" type="password" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label>poziom uprawnień</label>
+                                                    <select name="privileges" class="form-control">
+                                                        <option value="0">wybierz</option>
+                                                        {foreach $privileges as $priv}
+                                                            <option value="{$priv.value}">{$priv.name}</option>
+                                                        {/foreach}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="form-group">
+                                                    <label>imię użytkownika</label>
+                                                    <input name="name" class="form-control" placeholder="wprowadź imię">
+                                                </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="form-group">
+                                                    <label>nazwisko użytkownika</label>
+                                                    <input name="surname" class="form-control" placeholder="wprowadź nazwisko">
+                                                </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="form-group">
+                                                    <label>numer telefonu użytkownika</label>
+                                                    <input name="phone" class="form-control" placeholder="wprowadź numer telefonu">
+                                                </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <button type="submit" class="btn btn-default" name="submit" value="submit">Submit Button</button>
+                                            <button type="reset" class="btn btn-default">Reset Button</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <!-- /.row (nested) -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
